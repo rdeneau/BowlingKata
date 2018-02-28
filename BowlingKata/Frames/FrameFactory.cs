@@ -2,29 +2,29 @@
 {
     public class FrameFactory
     {
-        public IFrame Create(int firstThrow, int nextThrow, int nextNextThrow)
+        public IFrame Create(int firstPins, int nextPins, int nextNextPins, bool isLastFrame)
         {
-            if (IsStrike(firstThrow))
+            if (IsStrike(firstPins))
             {
-                return new StrikeFrame(nextThrow, nextNextThrow);
+                return new StrikeFrame(nextPins, nextNextPins, isLastFrame);
             }
 
-            if (IsSpare(firstThrow, nextThrow))
+            if (IsSpare(firstPins, nextPins))
             {
-                return new SpareFrame(nextNextThrow);
+                return new SpareFrame(firstPins, nextNextPins, isLastFrame);
             }
 
-            return new NormalFrame(firstThrow, nextThrow);
+            return new NormalFrame(firstPins, nextPins);
         }
 
-        private static bool IsStrike(int firstThrow)
+        private static bool IsStrike(int firstPins)
         {
-            return firstThrow == 10;
+            return firstPins == 10;
         }
 
-        private static bool IsSpare(int firstThrow, int nextThrow)
+        private static bool IsSpare(int firstPins, int nextPins)
         {
-            return firstThrow + nextThrow == 10;
+            return firstPins + nextPins == 10;
         }
     }
 }

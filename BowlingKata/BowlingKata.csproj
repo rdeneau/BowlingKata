@@ -58,6 +58,7 @@
     <Compile Include="Frames\FrameTests.cs" />
     <Compile Include="Frames\IFrame.cs" />
     <Compile Include="Frames\NormalFrame.cs" />
+    <Compile Include="Frames\PinsPrinter.cs" />
     <Compile Include="Frames\SpareFrame.cs" />
     <Compile Include="Frames\StrikeFrame.cs" />
     <Compile Include="Game.cs" />

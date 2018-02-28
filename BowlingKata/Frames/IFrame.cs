@@ -4,5 +4,6 @@
     {
         int ThrowCount { get; }
         int Score { get; }
+        string Print();
     }
 }

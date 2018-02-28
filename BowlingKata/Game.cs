@@ -9,7 +9,6 @@ namespace BowlingKata
         private const int FrameCount = 10;
 
         private readonly FrameFactory _frameFactory;
-        private int _frameIndex = 0;
         private readonly List<int> _rolls = new List<int>();
 
         public Game(FrameFactory frameFactory)
@@ -22,6 +21,11 @@ namespace BowlingKata
             _rolls.Add(pins);
         }
 
+        public string Print()
+        {
+            return string.Join("|", ComputeFrames().ToList().Select(frame => frame.Print()));
+        }
+
         public int Score()
         {
             return ComputeFrames().Sum(frame => frame.Score);
@@ -29,20 +33,21 @@ namespace BowlingKata
 
         private IEnumerable<IFrame> ComputeFrames()
         {
-            var rolls     = GetRollsWithTwoFakeGutterRolls();
+            var rolls     = GetRollsWithTwoFakeGutter();
             var rollIndex = 0;
             for (var frameIndex = 0; frameIndex < FrameCount; frameIndex++)
             {
                 var frame = _frameFactory.Create(
                     rolls[rollIndex],
                     rolls[rollIndex + 1],
-                    rolls[rollIndex + 2]);
+                    rolls[rollIndex + 2],
+                    frameIndex + 1 == FrameCount);
                 rollIndex = rollIndex + frame.ThrowCount;
                 yield return frame;
             }
         }
 
-        private List<int> GetRollsWithTwoFakeGutterRolls()
+        private List<int> GetRollsWithTwoFakeGutter()
         {
             return new List<int>(_rolls) { 0, 0 };
         }
