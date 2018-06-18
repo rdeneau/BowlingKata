@@ -13,7 +13,7 @@
                 _roll2 = roll2;
             }
 
-            public override int Score() => _roll1 + _roll2;
+            public override int? Score() => _roll1 + _roll2;
         }
     }
 }

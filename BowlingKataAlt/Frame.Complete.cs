@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BowlingKataAlt
+﻿namespace BowlingKataAlt
 {
     public abstract partial class Frame
     {
@@ -8,10 +6,7 @@ namespace BowlingKataAlt
         {
             public override bool IsComplete => true;
 
-            public override IEnumerable<Frame> AddRoll(Roll roll)
-            {
-                yield break;
-            }
+            public override Frame AddRoll(Roll roll) => this;
         }
     }
 }

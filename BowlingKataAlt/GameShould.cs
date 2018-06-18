@@ -1,18 +1,18 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using Xunit;
 
 namespace BowlingKataAlt
 {
     public class GameShould
     {
+        private readonly List<int> _expectedScoresUpToFrame = new List<int>();
         private readonly Game _sut = new Game();
 
         [Fact]
         public void Score_Zero_At_First()
         {
-            _sut.Score()
-                .Should()
-                .Be(0);
+            ScoreShouldBe(0);
         }
 
         [Theory]
@@ -22,65 +22,53 @@ namespace BowlingKataAlt
         public void Score_Pending_After_One_Roll(int pins)
         {
             AddRolls(pins);
-
-            _sut.Score()
-                .Should()
-                .Be(pins);
+            ScoreShouldBe(pins);
         }
 
         [Fact]
         public void Score_Pins_Down_After_Two_Little_Rolls()
         {
             AddRolls(2, 4);
-
-            _sut.Score()
-                .Should()
-                .Be(2 + 4);
+            ScoreShouldBe(2 + 4);
         }
 
         [Fact]
         public void Score_First_Spare()
         {
             AddRolls(9, 1, 8);
-
-            _sut.Score()
-                .Should()
-                .Be((10 + 8) + 8);
+            ScoreShouldBe((10 + 8) + 8);
         }
 
         [Fact]
         public void Score_First_Strike()
         {
             AddRolls(10, 6, 2);
-
-            _sut.Score()
-                .Should()
-                .Be((10 + 6 + 2) + 6 + 2);
+            ScoreShouldBe((10 + 6 + 2) + 6 + 2);
         }
 
         [Fact]
         public void Score_All_Strikes()
         {
-            AddRolls(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-
-            _sut.Score()
-                .Should()
-                .Be(300);
+            AddRolls(10, 10, 10, 10, 10);
+            AddRolls(10, 10, 10, 10, 10);
+            AddRolls(10, 10);
+            ScoreShouldBe(300);
         }
 
         [Fact]
         public void Score_133()
         {
-            ScoreShouldBeAfterThisFrame(5,  1, 4);
-            ScoreShouldBeAfterThisFrame(14, 4, 5);
-            ScoreShouldBeAfterThisSpare(29, 6);
-            ScoreShouldBeAfterThisSpare(49, 5);
-            ScoreShouldBeAfterThisStrike(60);
-            ScoreShouldBeAfterThisFrame(61, 0, 1);
-            ScoreShouldBeAfterThisSpare(77, 7);
-            ScoreShouldBeAfterThisSpare(97, 6);
-            ScoreShouldBeAfterThisStrike(117);
-            ScoreShouldBeAfterThisFrame(133, 2, 8, 6);
+            ScoreShouldBeUpToThisFrame(5, 1, 4);
+            ScoreShouldBeUpToThisFrame(14, 4, 5);
+            ScoreShouldBeUpToThisSpare(29, 6);
+            ScoreShouldBeUpToThisSpare(49, 5);
+            ScoreShouldBeUpToThisStrike(60);
+            ScoreShouldBeUpToThisFrame(61, 0, 1);
+            ScoreShouldBeUpToThisSpare(77, 7);
+            ScoreShouldBeUpToThisSpare(97, 6);
+            ScoreShouldBeUpToThisStrike(117);
+            ScoreShouldBeUpToThisFrame(133, 2, 8, 6);
+            VerifyExpectedScoresUpToFrame();
         }
 
         private void AddRolls(params int[] rolls)
@@ -91,23 +79,37 @@ namespace BowlingKataAlt
             }
         }
 
-        private void ScoreShouldBeAfterThisFrame(int expectedScore, params int[] rolls)
+        private void ScoreShouldBe(int expectedScore)
         {
-            AddRolls(rolls);
-
             _sut.Score()
                 .Should()
                 .Be(expectedScore);
         }
 
-        private void ScoreShouldBeAfterThisSpare(int expectedScore, int roll1)
+        private void ScoreShouldBeUpToThisFrame(int expectedScore, params int[] rolls)
         {
-            ScoreShouldBeAfterThisFrame(expectedScore, roll1, 10 - roll1);
+            AddRolls(rolls);
+            _expectedScoresUpToFrame.Add(expectedScore);
         }
 
-        private void ScoreShouldBeAfterThisStrike(int expectedScore)
+        private void ScoreShouldBeUpToThisSpare(int expectedScore, int roll1)
         {
-            ScoreShouldBeAfterThisFrame(expectedScore, 10);
+            ScoreShouldBeUpToThisFrame(expectedScore, roll1, 10 - roll1);
+        }
+
+        private void ScoreShouldBeUpToThisStrike(int expectedScore)
+        {
+            ScoreShouldBeUpToThisFrame(expectedScore, 10);
+        }
+
+        private void VerifyExpectedScoresUpToFrame()
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                _sut.ScoreUpToFrame(i)
+                    .Should()
+                    .Be(_expectedScoresUpToFrame[i]);
+            }
         }
     }
 }

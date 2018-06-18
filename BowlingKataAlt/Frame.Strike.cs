@@ -11,7 +11,7 @@
                 _roll = roll;
             }
 
-            public override int Score() => Roll.MaxPins + _roll.Next + _roll.Next?.Next;
+            public override int? Score() => Roll.MaxPins + _roll.Next + _roll.Next?.Next;
         }
     }
 }

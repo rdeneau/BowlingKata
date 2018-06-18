@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace BowlingKataAlt
 {
@@ -7,31 +6,48 @@ namespace BowlingKataAlt
     {
         private const int MaxFrames = 10;
 
-        private readonly List<Frame> _frames = new List<Frame>();
+        private readonly Frame[] _frames = Enumerable.Range(1, MaxFrames)
+                                                     .Select(_ => Frame.CreateEmpty())
+                                                     .ToArray();
 
-        private Frame _currentFrame = Frame.First();
-        private Roll  _currentRoll  = Roll.Empty();
+        private int _currentFrameIndex;
+        private Roll _currentRoll = Roll.Empty();
+
+        private Frame CurrentFrame
+        {
+            get => _frames[_currentFrameIndex];
+            set
+            {
+                _frames[_currentFrameIndex] = value;
+                if (value.IsComplete &&
+                    _currentFrameIndex < MaxFrames - 1)
+                {
+                    _currentFrameIndex++;
+                }
+            }
+        }
 
         public void AddRoll(int pins)
         {
-            UpdateRoll(pins);
+            UpdateRoll(new Roll(pins));
             UpdateFrames();
         }
 
-        private void UpdateRoll(int pins)
+        private void UpdateRoll(Roll nextRoll)
         {
-            var roll = new Roll(pins);
-            _currentRoll.Next = roll;
-            _currentRoll      = roll;
+            _currentRoll.Next = nextRoll;
+            _currentRoll      = nextRoll;
         }
 
         private void UpdateFrames()
         {
-            var result = _currentFrame.AddRoll(_currentRoll).ToList();
-            _frames.AddRange(result.Where(frame => frame.IsComplete).Take(MaxFrames - _frames.Count));
-            _currentFrame = result.Single(frame => !frame.IsComplete);
+            CurrentFrame = CurrentFrame.AddRoll(_currentRoll);
         }
 
-        public int Score() => _currentFrame.Score() + _frames.Sum(frame => frame.Score());
+        public int ScoreUpToFrame(int frameIndex) =>
+            _frames.Take(frameIndex + 1)
+                   .Sum(frame => frame.Score() ?? 0);
+
+        public int Score() => ScoreUpToFrame(MaxFrames);
     }
 }

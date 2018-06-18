@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace BowlingKataAlt
+﻿namespace BowlingKataAlt
 {
     public abstract partial class Frame
     {
-        public static Frame First()
+        public static Frame CreateEmpty()
         {
             return new Empty();
         }
@@ -12,7 +10,7 @@ namespace BowlingKataAlt
         private Frame() { }
 
         public abstract bool IsComplete { get; }
-        public abstract IEnumerable<Frame> AddRoll(Roll roll);
-        public abstract int Score();
+        public abstract Frame AddRoll(Roll roll);
+        public abstract int? Score();
     }
 }
